@@ -1,0 +1,11 @@
+node_modules/*
+dist/
+*.DS_Store
+.idea/*
+diff.log
+lib/*
+typings/*
+**/*.js
+*.log
+*.lock
+package-lock.json

@@ -1,0 +1,25 @@
+{
+	"compilerOptions": {
+		"sourceMap": true,
+		"noImplicitAny": true,
+		"strictNullChecks": true,
+		"outDir": "./lib",
+		"declaration": true,
+		"declarationDir": "./typings",
+		// "esModuleInterop": true,
+		// "allowSyntheticDefaultImports": true,
+		"module": "commonjs", //tsc will throw ES6 module error if setting 'es6' in there
+		// Search under node_modules for non-relative imports.
+		"moduleResolution": "node",
+		"target": "es6",
+		"jsx": "react",
+		"typeRoots": ["node_modules/@types", "./typings/*", "node_modules/@webgpu/types", "./src/types.ts"],
+		"baseUrl": "./",
+		"paths": {
+			"@/*": ["src/*"]
+		}
+	},
+	"include": ["./src/**/*", "demo.ts"],
+	"exclude": ["node_modules", "./typings/**/*"]
+	// "exclude": ["node_modules", "./typings/**/*", "./src/demo/*"]
+}
