@@ -16,8 +16,8 @@ export type Style = {
 	pointerColor?: string
 	startTimeLabel?: FontStyle
 	endTimeLabel?: FontStyle
-	lowerLabel?: FontStyle
-	upperLabel?: FontStyle
+	midLabel?: FontStyle & { y?: number }
+	upperLabel?: FontStyle & { y?: number }
 	lowerTick?: LineStyle
 	upperTick?: LineStyle
 	currentTime?: {
@@ -45,8 +45,10 @@ export type Style = {
 	}
 }
 
-export const defaultStyle: DeepRequired<Style> = {
-	background: '#333',
+export type RequiredStyle = DeepRequired<Style>
+
+export const defaultStyle: RequiredStyle = {
+	background: '#13182a',
 	pointerColor: '#A25A53',
 	startTimeLabel: {
 		color: 'rgba(255, 255, 255, 0.9)',
@@ -58,11 +60,13 @@ export const defaultStyle: DeepRequired<Style> = {
 	},
 	upperLabel: {
 		color: 'rgba(255, 255, 255, 0.7)',
-		font: '12px MicrosoftYaHeiUI',
+		font: '10px MicrosoftYaHeiUI',
+		y: 26,
 	},
-	lowerLabel: {
+	midLabel: {
 		color: 'rgba(255, 255, 255, 0.7)',
-		font: '12px MicrosoftYaHeiUI',
+		font: '10px MicrosoftYaHeiUI',
+		y: 14,
 	},
 	lowerTick: {
 		color: 'rgba(255, 255, 255, 1)',
@@ -89,7 +93,7 @@ export const defaultStyle: DeepRequired<Style> = {
 		show: true,
 		label: {
 			color: 'rgba(255, 255, 255, 0.9)',
-			font: '14px MicrosoftYaHeiUI',
+			font: '12px MicrosoftYaHeiUI',
 		},
 	},
 	progress: {
