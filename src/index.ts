@@ -139,18 +139,33 @@ class Timeline {
 	}
 
 	mouseDownX = 0
+	moveStartTime = 0
 	private onTimelineMouseDown = (x: number) => {
 		this.draggingItem = 'timeline'
 		this.mouseDownX = x
+		this.moveStartTime = this.currentTime
 		window.addEventListener('mousemove', this.onTimelineMouseMove)
 		window.addEventListener('mouseup', this.onTimelineMouseUp)
 	}
 
 	private onTimelineMouseMove = (e: MouseEvent) => {
+		if (this.draggingItem !== 'timeline') return
+		const speed = e.shiftKey ? 5 : 1
 		const { x } = this.getCanvasCoord(e)
+		const dist = x - this.mouseDownX
+		if (Math.abs(dist) <= 1) return
+		const flag = dist > 0 ? 1 : -1
+		let offset = 0
+		let currentTime = this.moveStartTime
+		while (Math.abs(offset) < Math.abs(dist)) {
+			offset += flag * this.tickGap
+			currentTime += -flag * levelMap[this.level].getOneTickTime(moment(currentTime)) * speed
+		}
+		currentTime = Math.max(this.startTime, Math.min(this.endTime, currentTime))
+		this.setCurrentTime(currentTime)
 	}
 
-	private onTimelineMouseUp() {
+	private onTimelineMouseUp = () => {
 		window.removeEventListener('mousemove', this.onTimelineMouseMove)
 		window.removeEventListener('mouseup', this.onTimelineMouseUp)
 		this.draggingItem = undefined
