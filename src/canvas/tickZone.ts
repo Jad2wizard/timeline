@@ -59,7 +59,7 @@ export const drawTickZone = (
 			upperTickXList.push(pixelOffset)
 		} else if (level.shouldDrawMidLabel(time)) {
 			midLabelList.push({ x: pixelOffset, text: level.setMidlabel(time) })
-			lowerTickXList.push(pixelOffset)
+			upperTickXList.push(pixelOffset)
 		} else {
 			lowerTickXList.push(pixelOffset)
 		}

@@ -78,8 +78,8 @@ export type LevelKey = keyof typeof levelMap
 
 export const containerHeight = 90
 export const topPadding = 10
-export const bottomPadding = 10
-export const rightPadding = 20
+export const bottomPadding = 4
+export const rightPadding = 10
 export const leftZoneWidth = 100
 export const playBtnRadius = 16
 

@@ -61,12 +61,12 @@ export const defaultStyle: RequiredStyle = {
 	upperLabel: {
 		color: 'rgba(255, 255, 255, 0.7)',
 		font: '10px MicrosoftYaHeiUI',
-		y: 26,
+		y: 24,
 	},
 	midLabel: {
 		color: 'rgba(255, 255, 255, 0.7)',
 		font: '10px MicrosoftYaHeiUI',
-		y: 14,
+		y: 12,
 	},
 	lowerTick: {
 		color: 'rgba(255, 255, 255, 1)',
