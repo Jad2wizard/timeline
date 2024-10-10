@@ -69,13 +69,13 @@ export const defaultStyle: RequiredStyle = {
 		y: 12,
 	},
 	lowerTick: {
-		color: 'rgba(255, 255, 255, 1)',
-		lineWidth: 1.5,
+		color: 'rgba(255, 255, 255, 0.7)',
+		lineWidth: 1,
 		length: 4,
 	},
 	upperTick: {
-		color: 'rgba(255, 255, 255, 1)',
-		lineWidth: 1.5,
+		color: 'rgba(255, 255, 255, 0.7)',
+		lineWidth: 1,
 		length: 8,
 	},
 	currentTime: {

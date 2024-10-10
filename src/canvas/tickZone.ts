@@ -51,14 +51,16 @@ export const drawTickZone = (
 	let pixelOffset = startX
 	let time = currentTime
 	const level = levelMap[currentLevel]
+	const uplabelWidth = level.getUplabelWidth(ctx)
+	const midLabelWidth = level.getMidlabelWidth(ctx)
 	tickGap = Math.min(Math.max(tickGap, level.minGap), level.maxGap)
 	while (pixelOffset < pixelWidth) {
 		if (level.shouldDrawHighLabel(time)) {
-			upperLabelList.push({ x: pixelOffset, text: level.setUplabel(time) })
-			midLabelList.push({ x: pixelOffset, text: level.setMidlabel(time) })
+			if (pixelOffset > uplabelWidth / 2) upperLabelList.push({ x: pixelOffset, text: level.getUplabel(time) })
+			if (pixelOffset > midLabelWidth / 2) midLabelList.push({ x: pixelOffset, text: level.getMidlabel(time) })
 			upperTickXList.push(pixelOffset)
 		} else if (level.shouldDrawMidLabel(time)) {
-			midLabelList.push({ x: pixelOffset, text: level.setMidlabel(time) })
+			if (pixelOffset > midLabelWidth / 2) midLabelList.push({ x: pixelOffset, text: level.getMidlabel(time) })
 			upperTickXList.push(pixelOffset)
 		} else {
 			lowerTickXList.push(pixelOffset)
@@ -66,14 +68,15 @@ export const drawTickZone = (
 		pixelOffset += tickGap
 		time.add(1, currentLevel)
 	}
+	console.log(upperTickXList)
 
 	//绘制短的刻度线
 	let height = style.lowerTick.length
 	ctx.strokeStyle = style.lowerTick.color
 	ctx.lineWidth = style.lowerTick.lineWidth
 	for (let x of lowerTickXList) {
-		ctx.moveTo(x, 0)
-		ctx.lineTo(x, height)
+		ctx.moveTo(x, 1)
+		ctx.lineTo(x, height + 1)
 	}
 	ctx.stroke()
 
@@ -82,9 +85,12 @@ export const drawTickZone = (
 	ctx.strokeStyle = style.upperTick.color
 	ctx.lineWidth = style.upperTick.lineWidth
 	for (let x of upperTickXList) {
-		ctx.moveTo(x, 0)
-		ctx.lineTo(x, height)
+		ctx.moveTo(x, 1)
+		ctx.lineTo(x, height + 1)
 	}
+
+	ctx.moveTo(0, 0)
+	ctx.lineTo(pixelWidth, 0)
 	ctx.stroke()
 
 	//绘制刻度标签

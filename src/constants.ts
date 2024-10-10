@@ -18,8 +18,10 @@ export const levelMap = {
 		shouldDrawMidLabel: () => true,
 		shouldDrawHighLabel: () => false,
 		getOneTickTime: (time: Moment) => 1000 * 60 * 60 * 24 * isLeapYear(time), //28 29 31
-		setUplabel: (time: Moment) => time.format('YYYY年'),
-		setMidlabel: (time: Moment) => time.format('YYYY年'),
+		getUplabel: (time: Moment) => time.format('YYYY年'),
+		getMidlabel: (time: Moment) => time.format('YYYY年'),
+		getUplabelWidth: (ctx: CanvasRenderingContext2D) => ctx.measureText('YYYY年').width,
+		getMidlabelWidth: (ctx: CanvasRenderingContext2D) => ctx.measureText('YYYY年').width,
 	},
 	month: {
 		minGap: 32, //刻度之间的最小距离
@@ -28,8 +30,10 @@ export const levelMap = {
 		shouldDrawMidLabel: () => true,
 		shouldDrawHighLabel: (time: Moment) => time.month() === 0,
 		getOneTickTime: (time: Moment) => 1000 * 60 * 60 * 24 * time.daysInMonth(),
-		setUplabel: (time: Moment) => time.format('YYYY年'), //刻度格式
-		setMidlabel: (time: Moment) => time.format('MM月'), //刻度格式
+		getUplabel: (time: Moment) => time.format('YYYY年'), //刻度格式
+		getMidlabel: (time: Moment) => time.format('MM月'), //刻度格式
+		getUplabelWidth: (ctx: CanvasRenderingContext2D) => ctx.measureText('YYYY年').width,
+		getMidlabelWidth: (ctx: CanvasRenderingContext2D) => ctx.measureText('MM月').width,
 	},
 
 	day: {
@@ -39,8 +43,10 @@ export const levelMap = {
 		shouldDrawMidLabel: () => true,
 		shouldDrawHighLabel: (time: Moment) => time.date() === 1,
 		getOneTickTime: (time: Moment) => 1000 * 60 * 60 * 24,
-		setUplabel: (time: Moment) => time.format('YYYY-MM'),
-		setMidlabel: (time: Moment) => time.format('DD'),
+		getUplabel: (time: Moment) => time.format('YYYY-MM'),
+		getMidlabel: (time: Moment) => time.format('DD'),
+		getUplabelWidth: (ctx: CanvasRenderingContext2D) => ctx.measureText('YYYY-MM').width,
+		getMidlabelWidth: (ctx: CanvasRenderingContext2D) => ctx.measureText('DD').width,
 	},
 	hour: {
 		minGap: 16,
@@ -49,8 +55,10 @@ export const levelMap = {
 		shouldDrawMidLabel: (time: Moment) => time.hours() % 6 === 0,
 		shouldDrawHighLabel: (time: Moment) => time.hours() === 0,
 		getOneTickTime: (time: Moment) => 1000 * 60 * 60,
-		setUplabel: (time: Moment) => time.format('YYYY-MM-DD'),
-		setMidlabel: (time: Moment) => time.format('HH:00:00'),
+		getUplabel: (time: Moment) => time.format('YYYY-MM-DD'),
+		getMidlabel: (time: Moment) => time.format('HH:00:00'),
+		getUplabelWidth: (ctx: CanvasRenderingContext2D) => ctx.measureText('YYYY-MM-DD').width,
+		getMidlabelWidth: (ctx: CanvasRenderingContext2D) => ctx.measureText('HH:00:00').width,
 	},
 	minute: {
 		minGap: 8,
@@ -59,8 +67,10 @@ export const levelMap = {
 		shouldDrawMidLabel: (time: Moment) => time.minutes() % 10 === 0,
 		shouldDrawHighLabel: (time: Moment) => time.minutes() === 0,
 		getOneTickTime: (time: Moment) => 1000 * 60,
-		setUplabel: (time: Moment) => time.format('YYYY-MM-DD'),
-		setMidlabel: (time: Moment) => time.format('HH:mm:00'),
+		getUplabel: (time: Moment) => time.format('YYYY-MM-DD'),
+		getMidlabel: (time: Moment) => time.format('HH:mm:00'),
+		getUplabelWidth: (ctx: CanvasRenderingContext2D) => ctx.measureText('YYYY-MM-DD').width,
+		getMidlabelWidth: (ctx: CanvasRenderingContext2D) => ctx.measureText('HH:mm:00').width,
 	},
 	second: {
 		minGap: 8,
@@ -69,8 +79,10 @@ export const levelMap = {
 		shouldDrawMidLabel: (time: Moment) => time.seconds() % 10 === 0,
 		shouldDrawHighLabel: (time: Moment) => time.seconds() === 0,
 		getOneTickTime: (time: Moment) => 1000,
-		setUplabel: (time: Moment) => time.format('YYYY-MM-DD'),
-		setMidlabel: (time: Moment) => time.format('HH:mm:ss'),
+		getUplabel: (time: Moment) => time.format('YYYY-MM-DD'),
+		getMidlabel: (time: Moment) => time.format('HH:mm:ss'),
+		getUplabelWidth: (ctx: CanvasRenderingContext2D) => ctx.measureText('YYYY-MM-DD').width,
+		getMidlabelWidth: (ctx: CanvasRenderingContext2D) => ctx.measureText('HH:mm:ss').width,
 	},
 }
 

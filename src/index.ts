@@ -99,9 +99,10 @@ class Timeline {
 
 	private onMouseWheel = (e: WheelEvent) => {
 		const { minGap, maxGap } = levelMap[this.level]
+		const speed = e.shiftKey ? 5 : 1
 		if (e.deltaY > 0) {
 			if (this.tickGap < maxGap) {
-				this.setTickGap(this.tickGap + 1)
+				this.setTickGap(this.tickGap + speed)
 			} else {
 				const forwardLevel = levelKeys[levelKeys.indexOf(this.level) + 1] as LevelKey
 				if (!forwardLevel) return
@@ -110,7 +111,7 @@ class Timeline {
 			}
 		} else if (e.deltaY < 0) {
 			if (this.tickGap > minGap) {
-				this.setTickGap(this.tickGap - 1)
+				this.setTickGap(this.tickGap - speed)
 			} else {
 				const nextLevel = levelKeys[levelKeys.indexOf(this.level) - 1] as LevelKey
 				if (!nextLevel) return
@@ -150,7 +151,8 @@ class Timeline {
 
 	private onTimelineMouseMove = (e: MouseEvent) => {
 		if (this.draggingItem !== 'timeline') return
-		const speed = e.shiftKey ? 5 : 1
+		// const speed = e.shiftKey ? 5 : 1
+		const speed = 1
 		const { x } = this.getCanvasCoord(e)
 		const dist = x - this.mouseDownX
 		if (Math.abs(dist) <= 1) return

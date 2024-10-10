@@ -4,7 +4,7 @@ import { leftZoneWidth, playBtnRadius, topPadding } from '../constants'
 export const clearPlayBtn = (ctx: CanvasRenderingContext2D) => {
 	const playBtnPos = { x: leftZoneWidth / 2 - playBtnRadius, y: topPadding, r: playBtnRadius }
 	const { x, y, r } = playBtnPos
-	ctx.clearRect(x, y, r * 2 + x, r * 2 + y)
+	ctx.clearRect(x - 1, y - 1, r * 2 + x + 1, r * 2 + y + 1)
 }
 
 export const drawPlayBtn = (ctx: CanvasRenderingContext2D, style: RequiredStyle['playBtn'], isPause = true) => {
@@ -16,7 +16,7 @@ export const drawPlayBtn = (ctx: CanvasRenderingContext2D, style: RequiredStyle[
 	const lineWidth = style.lineWidth
 	ctx.beginPath()
 	ctx.arc(0, 0, playBtnPos.r, 0, 2 * Math.PI)
-	const r = playBtnPos.r * 0.75
+	const r = playBtnPos.r * 0.6
 	if (isPause) {
 		ctx.moveTo(-r / 2, -r * Math.sin(Math.PI / 3))
 		ctx.lineTo(-r / 2, r * Math.sin(Math.PI / 3))
@@ -40,7 +40,17 @@ export const drawPlayBtn = (ctx: CanvasRenderingContext2D, style: RequiredStyle[
 	}
 	ctx.strokeStyle = color
 	ctx.lineWidth = lineWidth
+	ctx.closePath()
 	ctx.stroke()
+
+	ctx.beginPath()
+	ctx.arc(0, 0, playBtnPos.r, 0, 2 * Math.PI)
+	ctx.closePath()
+	const gradient = ctx.createRadialGradient(0, 0, playBtnPos.r * 0.75, 0, 0, playBtnPos.r * 1)
+	gradient.addColorStop(0, 'rgba(255, 255, 255, 0.1)')
+	gradient.addColorStop(1, 'rgba(255, 255, 255, 0.3)')
+	ctx.fillStyle = gradient
+	ctx.fill()
 	ctx.restore()
 }
 

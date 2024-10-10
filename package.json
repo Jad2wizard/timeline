@@ -6,7 +6,7 @@
 	"types": "typings/index.d.ts",
 	"scripts": {
 		"start": "webpack serve",
-		"build": "npm run clear-output && tsc && tsc-alias",
+		"build": "tsc && tsc-alias",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"format": "prettier --write \"src/**/*.{ts,tsx,css,scss,html,json,md}\"",
 		"clear-output": "del ./typings/* ./lib/*"
