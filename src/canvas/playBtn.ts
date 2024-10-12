@@ -1,14 +1,16 @@
 import { RequiredStyle } from '../style'
 import { leftZoneWidth, playBtnRadius, topPadding } from '../constants'
 
+const offsetY = 8
+
 export const clearPlayBtn = (ctx: CanvasRenderingContext2D) => {
-	const playBtnPos = { x: leftZoneWidth / 2 - playBtnRadius, y: topPadding, r: playBtnRadius }
+	const playBtnPos = { x: leftZoneWidth / 2 - playBtnRadius, y: topPadding + offsetY, r: playBtnRadius }
 	const { x, y, r } = playBtnPos
 	ctx.clearRect(x - 1, y - 1, r * 2 + x + 1, r * 2 + y + 1)
 }
 
 export const drawPlayBtn = (ctx: CanvasRenderingContext2D, style: RequiredStyle['playBtn'], isPause = true) => {
-	const playBtnPos = { x: leftZoneWidth / 2 - playBtnRadius, y: topPadding, r: playBtnRadius }
+	const playBtnPos = { x: leftZoneWidth / 2 - playBtnRadius, y: topPadding + offsetY, r: playBtnRadius }
 	clearPlayBtn(ctx)
 	ctx.save()
 	ctx.translate(playBtnPos.x + playBtnPos.r, playBtnPos.y + playBtnPos.r)

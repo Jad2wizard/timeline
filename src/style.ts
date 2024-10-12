@@ -86,7 +86,7 @@ export const defaultStyle: RequiredStyle = {
 		},
 	},
 	playBtn: {
-		color: 'rgba(255, 255, 255, 0.7)',
+		color: 'rgba(255, 255, 255, 0.5)',
 		lineWidth: 2,
 	},
 	timeScale: {

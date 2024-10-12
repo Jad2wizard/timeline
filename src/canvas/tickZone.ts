@@ -89,8 +89,8 @@ export const drawTickZone = (
 		ctx.lineTo(x, height + 1)
 	}
 
-	ctx.moveTo(0, 0)
-	ctx.lineTo(pixelWidth, 0)
+	// ctx.moveTo(0, 0)
+	// ctx.lineTo(pixelWidth, 0)
 	ctx.stroke()
 
 	//绘制刻度标签
