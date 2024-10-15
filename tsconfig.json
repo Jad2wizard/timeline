@@ -19,7 +19,7 @@
 			"@/*": ["src/*"]
 		}
 	},
-	"include": ["./src/**/*", "demo.ts"],
+	"include": ["./src/**/*"],
 	"exclude": ["node_modules", "./typings/**/*"]
 	// "exclude": ["node_modules", "./typings/**/*", "./src/demo/*"]
 }
