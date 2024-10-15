@@ -36,11 +36,9 @@ export type Style = {
 		show?: boolean
 		pointerSize?: number
 		pointerColor?: string
-		pointerBorderWidth?: number
-		pointerBorderColor?: string
 		trackWidth?: number
-		trackeColor?: string
-		barColor?: string
+		trackColor?: string
+		trackBgColor?: string
 		label?: FontStyle
 	}
 }
@@ -98,15 +96,13 @@ export const defaultStyle: RequiredStyle = {
 	},
 	progress: {
 		show: true,
-		pointerSize: 15,
+		pointerSize: 20,
 		pointerColor: 'rgba(255, 255, 255, 1)',
-		pointerBorderWidth: 1,
-		pointerBorderColor: '#333',
 		trackWidth: 10,
-		trackeColor: 'rgba(245, 124, 1, 1)',
-		barColor: '',
+		trackColor: 'rgba(245, 124, 1, 1)',
+		trackBgColor: 'rgba(255, 255, 255, 0.2)',
 		label: {
-			color: 'rgba(255, 255, 255, 1)',
+			color: 'rgba(255, 255, 255, 0.5)',
 			font: '12px MicrosoftYaHeiUI',
 		},
 	},

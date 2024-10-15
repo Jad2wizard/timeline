@@ -73,6 +73,8 @@ export const drawTimeScale = (ctx: CanvasRenderingContext2D, style: RequiredStyl
 	ctx.lineTo(-secondTriangleX, -y)
 	ctx.lineTo(-secondTriangleX, 0)
 
+	ctx.closePath()
+
 	ctx.stroke()
 
 	ctx.restore()

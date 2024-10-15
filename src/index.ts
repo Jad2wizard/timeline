@@ -5,7 +5,8 @@ import { Style, RequiredStyle, defaultStyle } from './style'
 import { drawPlayBtn, mouseInPlayBtn } from './canvas/playBtn'
 import { drawTimeScale, mouseInTimeScale } from './canvas/timeScale'
 import { drawTickZone, mouseInTickZone } from './canvas/tickZone'
-import { containerHeight, LevelKey, levelKeys, levelMap, timeScaleList } from './constants'
+import { drawProgress, mouseInProgressPointer } from './canvas/progress'
+import { containerHeight, leftZoneWidth, LevelKey, levelKeys, levelMap, rightPadding, timeScaleList } from './constants'
 
 type Props = {
 	parentElement: HTMLElement
@@ -58,6 +59,7 @@ class Timeline {
 		if (!this.ctx || this.currentTime < 0) return
 		drawPlayBtn(this.ctx, this.style.playBtn, this.isPlaying)
 		drawTimeScale(this.ctx, this.style.timeScale, this.timeScale)
+		drawProgress(this.ctx, this.style['progress'], this.currentTime, this.startTime, this.endTime)
 		drawTickZone(this.ctx, this.style, moment(this.currentTime), this.level, this.tickGap)
 	}
 
@@ -79,6 +81,7 @@ class Timeline {
 	}
 
 	play() {
+		this.lastTimestamp = 0
 		this.isPlaying = true
 		this.render()
 	}
@@ -141,6 +144,20 @@ class Timeline {
 			this.onTimeScaleClick(timeScaleDir)
 			return
 		}
+		if (
+			mouseInProgressPointer(
+				this.ctx,
+				this.style['progress'],
+				x,
+				y,
+				this.currentTime,
+				this.startTime,
+				this.endTime,
+			)
+		) {
+			this.onProgressPointerMouseDown(x)
+			return
+		}
 		if (mouseInTickZone(this.ctx, x, y)) {
 			this.onTimelineMouseDown(x)
 			return
@@ -149,12 +166,34 @@ class Timeline {
 
 	mouseDownX = 0
 	moveStartTime = 0
+
+	private onProgressPointerMouseDown = (x: number) => {
+		this.draggingItem = 'progress'
+		this.mouseDownX = x
+		this.moveStartTime = this.currentTime
+		window.addEventListener('mousemove', this.onProgressPointerMouseMove)
+		window.addEventListener('mouseup', this.onMouseUp)
+	}
+
+	private onProgressPointerMouseMove = (e: MouseEvent) => {
+		if (this.draggingItem !== 'progress' || !this.ctx) return
+		const { x } = this.getCanvasCoord(e)
+		const dist = x - this.mouseDownX
+		if (Math.abs(dist) <= 1) return
+		this.pause()
+		const timeRange = this.endTime - this.startTime
+		const delta = dist / (this.ctx.canvas.width - leftZoneWidth - rightPadding)
+		let currentTime = this.moveStartTime + delta * timeRange
+		currentTime = Math.max(this.startTime, Math.min(this.endTime, currentTime))
+		this.setCurrentTime(currentTime)
+	}
+
 	private onTimelineMouseDown = (x: number) => {
 		this.draggingItem = 'timeline'
 		this.mouseDownX = x
 		this.moveStartTime = this.currentTime
 		window.addEventListener('mousemove', this.onTimelineMouseMove)
-		window.addEventListener('mouseup', this.onTimelineMouseUp)
+		window.addEventListener('mouseup', this.onMouseUp)
 	}
 
 	private onTimelineMouseMove = (e: MouseEvent) => {
@@ -164,6 +203,7 @@ class Timeline {
 		const { x } = this.getCanvasCoord(e)
 		const dist = x - this.mouseDownX
 		if (Math.abs(dist) <= 1) return
+		this.pause()
 		const flag = dist > 0 ? 1 : -1
 		let offset = 0
 		let currentTime = this.moveStartTime
@@ -175,15 +215,19 @@ class Timeline {
 		this.setCurrentTime(currentTime)
 	}
 
-	private onTimelineMouseUp = () => {
+	private onMouseUp = () => {
 		window.removeEventListener('mousemove', this.onTimelineMouseMove)
-		window.removeEventListener('mouseup', this.onTimelineMouseUp)
+		window.removeEventListener('mouseup', this.onMouseUp)
 		this.draggingItem = undefined
 	}
 
 	private onPlayBtnClick = () => {
 		this.isPlaying = !this.isPlaying
-		this.render()
+		if (this.isPlaying) {
+			this.play()
+		} else {
+			this.pause()
+		}
 	}
 
 	private onTimeScaleClick = (dir: 'up' | 'down') => {
@@ -219,13 +263,13 @@ class Timeline {
 	//每 1 / this.timeScale 秒，更新一次currentTime，每次累加 timeLevel 单位的时间
 	private animate = (timestamp: number) => {
 		if (this.disposed) return
-		if (this.lastTimestamp === 0) this.lastTimestamp = timestamp
-		if (this.isPlaying) {
+		if (this.isPlaying && this.currentTime < this.endTime) {
+			if (this.lastTimestamp === 0) this.lastTimestamp = timestamp
 			const delta = timestamp - this.lastTimestamp
 			this.lastTimestamp = timestamp
 
 			if (this.ellapsedTime >= 1000 / this.timeScale) {
-				const n = (this.ellapsedTime / 1000) * this.timeScale
+				const n = ((this.ellapsedTime / 1000) * this.timeScale) | 0
 				this.currentTime = moment(this.currentTime).add(n, this.level).valueOf()
 				this.ellapsedTime -= (n * 1000) / this.timeScale
 				this.render()
