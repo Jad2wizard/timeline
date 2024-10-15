@@ -9,7 +9,7 @@ export const clearPlayBtn = (ctx: CanvasRenderingContext2D) => {
 	ctx.clearRect(x - 1, y - 1, r * 2 + x + 1, r * 2 + y + 1)
 }
 
-export const drawPlayBtn = (ctx: CanvasRenderingContext2D, style: RequiredStyle['playBtn'], isPause = true) => {
+export const drawPlayBtn = (ctx: CanvasRenderingContext2D, style: RequiredStyle['playBtn'], isPlaying = true) => {
 	const playBtnPos = { x: leftZoneWidth / 2 - playBtnRadius, y: topPadding + offsetY, r: playBtnRadius }
 	clearPlayBtn(ctx)
 	ctx.save()
@@ -19,7 +19,7 @@ export const drawPlayBtn = (ctx: CanvasRenderingContext2D, style: RequiredStyle[
 	ctx.beginPath()
 	ctx.arc(0, 0, playBtnPos.r, 0, 2 * Math.PI)
 	const r = playBtnPos.r * 0.6
-	if (isPause) {
+	if (!isPlaying) {
 		ctx.moveTo(-r / 2, -r * Math.sin(Math.PI / 3))
 		ctx.lineTo(-r / 2, r * Math.sin(Math.PI / 3))
 		ctx.lineTo(r, 0)
@@ -57,7 +57,7 @@ export const drawPlayBtn = (ctx: CanvasRenderingContext2D, style: RequiredStyle[
 }
 
 export const mouseInPlayBtn = (x: number, y: number) => {
-	const playBtnPos = { x: leftZoneWidth / 2 - playBtnRadius, y: topPadding, r: playBtnRadius }
+	const playBtnPos = { x: leftZoneWidth / 2 - playBtnRadius, y: topPadding + offsetY, r: playBtnRadius }
 	return (
 		Math.pow(x - playBtnPos.x - playBtnPos.r, 2) + Math.pow(y - playBtnPos.y - playBtnPos.r, 2) <=
 		Math.pow(playBtnPos.r, 2)

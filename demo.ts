@@ -10,8 +10,8 @@ tl.container.style.bottom = '0px'
 tl.container.style.left = '0px'
 
 tl.setTimeRange(moment().subtract(3, 'year').valueOf(), moment().add(5, 'year').valueOf())
+tl.setTimeUnit('second')
 tl.setCurrentTime(moment().valueOf())
-tl.setTimeUnit('minute')
 
 //@ts-ignore
 window.tl = tl

@@ -24,6 +24,7 @@ class Timeline {
 	private isPlaying = false
 	private timeScale = 1
 	private draggingItem?: 'timeline' | 'progress'
+	private disposed = false
 
 	constructor(props: Props) {
 		this.currentTime = -1
@@ -46,6 +47,7 @@ class Timeline {
 
 		elementResizeEvent(document.body, this.resize)
 		this.bindEvents()
+		requestAnimationFrame(this.animate)
 	}
 
 	get container() {
@@ -76,8 +78,13 @@ class Timeline {
 		this.render()
 	}
 
-	setPlay(p: boolean) {
-		this.isPlaying = p
+	play() {
+		this.isPlaying = true
+		this.render()
+	}
+
+	pause() {
+		this.isPlaying = false
 		this.render()
 	}
 
@@ -88,6 +95,7 @@ class Timeline {
 	}
 
 	dispose() {
+		this.disposed = true
 		this.unbindEvents()
 		elementResizeEvent.unbind(document.body, this.resize)
 	}
@@ -204,6 +212,27 @@ class Timeline {
 	private unbindEvents() {
 		this.container.removeEventListener('wheel', this.onMouseWheel)
 		this.container.removeEventListener('mousedown', this.onMouseDown)
+	}
+
+	private lastTimestamp = 0
+	private ellapsedTime = 0
+	//每 1 / this.timeScale 秒，更新一次currentTime，每次累加 timeLevel 单位的时间
+	private animate = (timestamp: number) => {
+		if (this.disposed) return
+		if (this.lastTimestamp === 0) this.lastTimestamp = timestamp
+		if (this.isPlaying) {
+			const delta = timestamp - this.lastTimestamp
+			this.lastTimestamp = timestamp
+
+			if (this.ellapsedTime >= 1000 / this.timeScale) {
+				const n = (this.ellapsedTime / 1000) * this.timeScale
+				this.currentTime = moment(this.currentTime).add(n, this.level).valueOf()
+				this.ellapsedTime -= (n * 1000) / this.timeScale
+				this.render()
+			}
+			this.ellapsedTime += delta
+		}
+		requestAnimationFrame(this.animate)
 	}
 }
 

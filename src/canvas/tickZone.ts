@@ -68,7 +68,6 @@ export const drawTickZone = (
 		pixelOffset += tickGap
 		time.add(1, currentLevel)
 	}
-	console.log(upperTickXList)
 
 	//绘制短的刻度线
 	let height = style.lowerTick.length
@@ -89,8 +88,6 @@ export const drawTickZone = (
 		ctx.lineTo(x, height + 1)
 	}
 
-	// ctx.moveTo(0, 0)
-	// ctx.lineTo(pixelWidth, 0)
 	ctx.stroke()
 
 	//绘制刻度标签
