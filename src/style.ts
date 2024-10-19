@@ -27,6 +27,10 @@ export type Style = {
 	playBtn?: {
 		color?: string
 		lineWidth?: number
+		hover?: {
+			color?: string
+			lineWidth?: number
+		}
 	}
 	timeScale?: {
 		show?: boolean
@@ -86,6 +90,10 @@ export const defaultStyle: RequiredStyle = {
 	playBtn: {
 		color: 'rgba(255, 255, 255, 0.5)',
 		lineWidth: 2,
+		hover: {
+			color: 'rgba(255, 255, 255, 0.9)',
+			lineWidth: 2,
+		},
 	},
 	timeScale: {
 		show: true,

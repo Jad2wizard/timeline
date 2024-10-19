@@ -2,11 +2,12 @@ import * as _ from 'lodash'
 import * as elementResizeEvent from 'element-resize-event'
 import * as moment from 'moment'
 import { Style, RequiredStyle, defaultStyle } from './style'
-import { drawPlayBtn, mouseInPlayBtn } from './canvas/playBtn'
-import { drawTimeScale, mouseInTimeScale } from './canvas/timeScale'
-import { drawTickZone, mouseInTickZone } from './canvas/tickZone'
-import { drawProgress, mouseInProgressPointer } from './canvas/progress'
-import { containerHeight, leftZoneWidth, LevelKey, levelKeys, levelMap, rightPadding, timeScaleList } from './constants'
+import { drawPlayBtn } from './canvas/playBtn'
+import { drawTimeScale } from './canvas/timeScale'
+import { drawTickZone } from './canvas/tickZone'
+import { drawProgress } from './canvas/progress'
+import { containerHeight, LevelKey } from './constants'
+import Event from './mouseEvent'
 
 type Props = {
 	parentElement: HTMLElement
@@ -17,15 +18,15 @@ class Timeline {
 	private startTime = 0
 	private endTime = 0
 	private _container: HTMLCanvasElement
-	private ctx: CanvasRenderingContext2D | null
+	private _ctx: CanvasRenderingContext2D | null
 	private style: RequiredStyle
 	private currentTime: number
 	private tickGap: number
 	private level: LevelKey
 	private isPlaying = false
 	private timeScale = 1
-	private draggingItem?: 'timeline' | 'progress'
 	private disposed = false
+	private event: Event
 
 	constructor(props: Props) {
 		this.currentTime = -1
@@ -41,18 +42,40 @@ class Timeline {
 		this._container.width = this._container.offsetWidth
 		this._container.height = this._container.offsetHeight
 
-		this.ctx = this._container.getContext('2d')
-		if (!this.ctx) {
+		this._ctx = this._container.getContext('2d')
+		if (!this._ctx) {
 			throw '浏览器不支持 canvas'
 		}
 
+		this.event = new Event({
+			canvas: this._container,
+			ctx: this._ctx,
+			style: this.style,
+			getCurrentTime: () => this.currentTime,
+			getStartTime: () => this.startTime,
+			getEndTime: () => this.endTime,
+			getTickGap: () => this.tickGap,
+			getTimeScale: () => this.timeScale,
+			getLevel: () => this.level,
+			onLevelChange: (level: LevelKey) => {
+				this.level = level
+			},
+			onTickGapChange: this.setTickGap.bind(this),
+			onTimeScaleChange: this.setTimeScale.bind(this),
+			onIsPlayingToggle: this.onIsPlayingChange.bind(this),
+			onCurrentTimeChange: this.setCurrentTime.bind(this),
+			pause: this.pause.bind(this),
+		})
 		elementResizeEvent(document.body, this.resize)
-		this.bindEvents()
 		requestAnimationFrame(this.animate)
 	}
 
 	get container() {
 		return this._container
+	}
+
+	get ctx() {
+		return this._ctx
 	}
 
 	render() {
@@ -99,8 +122,8 @@ class Timeline {
 
 	dispose() {
 		this.disposed = true
-		this.unbindEvents()
 		elementResizeEvent.unbind(document.body, this.resize)
+		this.event.dispose()
 	}
 
 	private setTickGap(t: number) {
@@ -108,154 +131,18 @@ class Timeline {
 		this.render()
 	}
 
-	private onMouseWheel = (e: WheelEvent) => {
-		const { minGap, maxGap } = levelMap[this.level]
-		const speed = e.shiftKey ? 5 : 1
-		if (e.deltaY > 0) {
-			if (this.tickGap < maxGap) {
-				this.setTickGap(this.tickGap + speed)
-			} else {
-				const forwardLevel = levelKeys[levelKeys.indexOf(this.level) + 1] as LevelKey
-				if (!forwardLevel) return
-				this.level = forwardLevel
-				this.setTickGap(levelMap[this.level].minGap)
-			}
-		} else if (e.deltaY < 0) {
-			if (this.tickGap > minGap) {
-				this.setTickGap(this.tickGap - speed)
-			} else {
-				const nextLevel = levelKeys[levelKeys.indexOf(this.level) - 1] as LevelKey
-				if (!nextLevel) return
-				this.level = nextLevel
-				this.setTickGap(levelMap[this.level].maxGap)
-			}
-		}
+	private setTimeScale(s: number) {
+		this.timeScale = s
+		this.render()
 	}
 
-	private onMouseDown = (e: MouseEvent) => {
-		if (!this.ctx) return
-		const { x, y } = this.getCanvasCoord(e)
-		if (mouseInPlayBtn(x, y)) {
-			this.onPlayBtnClick()
-			return
-		}
-		const timeScaleDir = mouseInTimeScale(this.ctx, this.timeScale, x, y)
-		if (timeScaleDir) {
-			this.onTimeScaleClick(timeScaleDir)
-			return
-		}
-		if (
-			mouseInProgressPointer(
-				this.ctx,
-				this.style['progress'],
-				x,
-				y,
-				this.currentTime,
-				this.startTime,
-				this.endTime,
-			)
-		) {
-			this.onProgressPointerMouseDown(x)
-			return
-		}
-		if (mouseInTickZone(this.ctx, x, y)) {
-			this.onTimelineMouseDown(x)
-			return
-		}
-	}
-
-	mouseDownX = 0
-	moveStartTime = 0
-
-	private onProgressPointerMouseDown = (x: number) => {
-		this.draggingItem = 'progress'
-		this.mouseDownX = x
-		this.moveStartTime = this.currentTime
-		window.addEventListener('mousemove', this.onProgressPointerMouseMove)
-		window.addEventListener('mouseup', this.onMouseUp)
-	}
-
-	private onProgressPointerMouseMove = (e: MouseEvent) => {
-		if (this.draggingItem !== 'progress' || !this.ctx) return
-		const { x } = this.getCanvasCoord(e)
-		const dist = x - this.mouseDownX
-		if (Math.abs(dist) <= 1) return
-		this.pause()
-		const timeRange = this.endTime - this.startTime
-		const delta = dist / (this.ctx.canvas.width - leftZoneWidth - rightPadding)
-		let currentTime = this.moveStartTime + delta * timeRange
-		currentTime = Math.max(this.startTime, Math.min(this.endTime, currentTime))
-		this.setCurrentTime(currentTime)
-	}
-
-	private onTimelineMouseDown = (x: number) => {
-		this.draggingItem = 'timeline'
-		this.mouseDownX = x
-		this.moveStartTime = this.currentTime
-		window.addEventListener('mousemove', this.onTimelineMouseMove)
-		window.addEventListener('mouseup', this.onMouseUp)
-	}
-
-	private onTimelineMouseMove = (e: MouseEvent) => {
-		if (this.draggingItem !== 'timeline') return
-		// const speed = e.shiftKey ? 5 : 1
-		const speed = 1
-		const { x } = this.getCanvasCoord(e)
-		const dist = x - this.mouseDownX
-		if (Math.abs(dist) <= 1) return
-		this.pause()
-		const flag = dist > 0 ? 1 : -1
-		let offset = 0
-		let currentTime = this.moveStartTime
-		while (Math.abs(offset) < Math.abs(dist)) {
-			offset += flag * this.tickGap
-			currentTime += -flag * levelMap[this.level].getOneTickTime(moment(currentTime)) * speed
-		}
-		currentTime = Math.max(this.startTime, Math.min(this.endTime, currentTime))
-		this.setCurrentTime(currentTime)
-	}
-
-	private onMouseUp = () => {
-		window.removeEventListener('mousemove', this.onTimelineMouseMove)
-		window.removeEventListener('mouseup', this.onMouseUp)
-		this.draggingItem = undefined
-	}
-
-	private onPlayBtnClick = () => {
+	private onIsPlayingChange = () => {
 		this.isPlaying = !this.isPlaying
 		if (this.isPlaying) {
 			this.play()
 		} else {
 			this.pause()
 		}
-	}
-
-	private onTimeScaleClick = (dir: 'up' | 'down') => {
-		const index = timeScaleList.indexOf(this.timeScale)
-		if (index === -1) return
-		if (dir === 'up') {
-			this.timeScale = timeScaleList[(index + 1) % timeScaleList.length]
-		} else {
-			this.timeScale = timeScaleList[(index - 1 + timeScaleList.length) % timeScaleList.length]
-		}
-		this.render()
-	}
-
-	private getCanvasCoord(e: MouseEvent) {
-		const rect = this.container.getBoundingClientRect()
-		const x = e.clientX - rect.left
-		const y = e.clientY - rect.top
-		return { x, y }
-	}
-
-	private bindEvents() {
-		this.container.addEventListener('wheel', this.onMouseWheel)
-		this.container.addEventListener('mousedown', this.onMouseDown)
-	}
-
-	private unbindEvents() {
-		this.container.removeEventListener('wheel', this.onMouseWheel)
-		this.container.removeEventListener('mousedown', this.onMouseDown)
 	}
 
 	private lastTimestamp = 0
