@@ -44,6 +44,9 @@ export type Style = {
 		trackColor?: string
 		trackBgColor?: string
 		label?: FontStyle
+		startTimeLabel?: FontStyle
+		currentTimeLabel?: FontStyle
+		endTimeLabel?: FontStyle
 	}
 }
 
@@ -110,7 +113,19 @@ export const defaultStyle: RequiredStyle = {
 		trackColor: 'rgba(245, 124, 1, 1)',
 		trackBgColor: 'rgba(255, 255, 255, 0.2)',
 		label: {
-			color: 'rgba(255, 255, 255, 0.5)',
+			color: 'rgba(255, 255, 255, 1)',
+			font: '12px MicrosoftYaHeiUI',
+		},
+		startTimeLabel: {
+			color: 'rgba(255, 255, 255, 0.6)',
+			font: '12px MicrosoftYaHeiUI',
+		},
+		currentTimeLabel: {
+			color: 'rgba(255, 255, 255, 0.9)',
+			font: '12px MicrosoftYaHeiUI',
+		},
+		endTimeLabel: {
+			color: 'rgba(255, 255, 255, 0.6)',
 			font: '12px MicrosoftYaHeiUI',
 		},
 	},

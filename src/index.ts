@@ -12,6 +12,8 @@ import Event from './mouseEvent'
 type Props = {
 	parentElement: HTMLElement
 	style?: Style
+	onCurrentTimeChange?: (timestamp: number) => void
+	onStatusChange?: (isPlaying: boolean) => void
 }
 
 class Timeline {
@@ -27,6 +29,8 @@ class Timeline {
 	private timeScale = 1
 	private disposed = false
 	private event: Event
+	private onCurrentTimeChange?: (timestamp: number) => void
+	private onStatusChange?: (isPlaying: boolean) => void
 
 	constructor(props: Props) {
 		this.currentTime = -1
@@ -41,6 +45,9 @@ class Timeline {
 		props.parentElement.appendChild(this._container)
 		this._container.width = this._container.offsetWidth
 		this._container.height = this._container.offsetHeight
+
+		this.onCurrentTimeChange = props.onCurrentTimeChange
+		this.onStatusChange = props.onStatusChange
 
 		this._ctx = this._container.getContext('2d')
 		if (!this._ctx) {
@@ -94,7 +101,11 @@ class Timeline {
 	}
 
 	setCurrentTime(time: number) {
+		if (time === this.currentTime) return
 		this.currentTime = time
+		if (this.onCurrentTimeChange) {
+			this.onCurrentTimeChange(time)
+		}
 		this.render()
 	}
 
@@ -143,6 +154,9 @@ class Timeline {
 		} else {
 			this.pause()
 		}
+		if (this.onStatusChange) {
+			this.onStatusChange(this.isPlaying)
+		}
 	}
 
 	private lastTimestamp = 0
@@ -157,9 +171,8 @@ class Timeline {
 
 			if (this.ellapsedTime >= 1000 / this.timeScale) {
 				const n = ((this.ellapsedTime / 1000) * this.timeScale) | 0
-				this.currentTime = moment(this.currentTime).add(n, this.level).valueOf()
 				this.ellapsedTime -= (n * 1000) / this.timeScale
-				this.render()
+				this.setCurrentTime(moment(this.currentTime).add(n, this.level).valueOf())
 			}
 			this.ellapsedTime += delta
 		}

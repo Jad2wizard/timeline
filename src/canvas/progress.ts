@@ -27,13 +27,17 @@ export const drawProgress = (
 	ctx.save()
 	ctx.translate(leftZoneWidth, topPadding)
 	//在左侧、中间和右侧分别绘制起始、当前和结束时间
-	ctx.fillStyle = style.label.color
-	ctx.font = style.label.font
+	ctx.fillStyle = style.startTimeLabel.color
+	ctx.font = style.startTimeLabel.font
 	ctx.textBaseline = 'top'
 	ctx.textAlign = 'left'
 	ctx.fillText(moment(startTime).format('YYYY-MM-DD HH:mm:ss'), 0, 0)
+	ctx.fillStyle = style.currentTimeLabel.color
+	ctx.font = style.currentTimeLabel.font
 	ctx.textAlign = 'center'
 	ctx.fillText('当前时间：' + moment(currentTime).format('YYYY-MM-DD HH:mm:ss'), width / 2, 0)
+	ctx.fillStyle = style.endTimeLabel.color
+	ctx.font = style.endTimeLabel.font
 	ctx.textAlign = 'right'
 	ctx.fillText(moment(endTime).format('YYYY-MM-DD HH:mm:ss'), width, 0)
 
@@ -62,6 +66,8 @@ export const drawProgress = (
 	ctx.fill()
 	ctx.textAlign = 'left'
 	ctx.textBaseline = 'middle'
+	ctx.fillStyle = style.label.color
+	ctx.font = style.label.font
 	ctx.fillText((progress * 100).toFixed(2) + '%', width * progress + style.pointerSize, trackY)
 
 	ctx.restore()

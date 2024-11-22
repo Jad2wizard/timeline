@@ -29,6 +29,7 @@ class Event {
 	private ctx: CanvasRenderingContext2D
 	private style: RequiredStyle
 	private draggingItem?: 'timeline' | 'progress'
+	private hoverItem?: 'playBtn' | 'timeScale' | 'tickZone' | 'progressPointer'
 	private getTimeScale: () => number
 	private getCurrentTime: () => number
 	private getStartTime: () => number
@@ -63,6 +64,7 @@ class Event {
 
 		this.canvas.addEventListener('wheel', this.onMouseWheel)
 		this.canvas.addEventListener('mousedown', this.onMouseDown)
+		this.canvas.addEventListener('mousemove', this.onMouseMove)
 	}
 
 	private getCanvasCoord(e: MouseEvent) {
@@ -70,6 +72,47 @@ class Event {
 		const x = e.clientX - rect.left
 		const y = e.clientY - rect.top
 		return { x, y }
+	}
+
+	private onMouseMove = (e: MouseEvent) => {
+		if (!this.ctx) return
+		const { x, y } = this.getCanvasCoord(e)
+		const onPlayBtn = mouseInPlayBtn(x, y)
+		if (onPlayBtn && this.hoverItem !== 'playBtn') {
+			this.hoverItem = 'playBtn'
+			this.canvas.style.cursor = 'pointer'
+			return
+		}
+		const onTimeScale = mouseInTimeScale(this.ctx, this.getTimeScale(), x, y)
+		if (onTimeScale) {
+			this.hoverItem = 'timeScale'
+			this.canvas.style.cursor = 'pointer'
+			return
+		}
+		const onProgressPointer = mouseInProgressPointer(
+			this.ctx,
+			this.style['progress'],
+			x,
+			y,
+			this.getCurrentTime(),
+			this.getStartTime(),
+			this.getEndTime(),
+		)
+		if (onProgressPointer) {
+			this.hoverItem = 'progressPointer'
+			this.canvas.style.cursor = 'move'
+			return
+		}
+		const onTickZone = mouseInTickZone(this.ctx, x, y)
+		if (onTickZone) {
+			this.hoverItem = 'tickZone'
+			this.canvas.style.cursor = 'ew-resize'
+			return
+		}
+		if (!onTimeScale && !onPlayBtn && !onProgressPointer && this.hoverItem) {
+			this.hoverItem = undefined
+			this.canvas.style.cursor = 'default'
+		}
 	}
 
 	private onMouseDown = (e: MouseEvent) => {
@@ -204,6 +247,7 @@ class Event {
 	dispose() {
 		this.canvas.removeEventListener('wheel', this.onMouseWheel)
 		this.canvas.removeEventListener('mousedown', this.onMouseDown)
+		this.canvas.removeEventListener('mousemove', this.onMouseMove)
 		//@ts-ignore
 		this._canvas = null
 	}
