@@ -1,4 +1,5 @@
 import { DeepRequired } from 'utility-types'
+import { Properties as CSSProperties } from 'csstype'
 
 type FontStyle = {
 	font?: string
@@ -11,8 +12,9 @@ type LineStyle = {
 	length?: number
 }
 
+export type CSSStyle = Partial<CSSProperties<string | number>>
+
 export type Style = {
-	background?: string
 	pointerColor?: string
 	startTimeLabel?: FontStyle
 	endTimeLabel?: FontStyle
@@ -52,8 +54,13 @@ export type Style = {
 
 export type RequiredStyle = DeepRequired<Style>
 
-export const defaultStyle: RequiredStyle = {
+export const defaultCSSStyle: CSSStyle = {
 	background: '#13182a',
+	width: '100%',
+	borderRadius: '0px',
+}
+
+export const defaultStyle: RequiredStyle = {
 	pointerColor: '#A25A53',
 	startTimeLabel: {
 		color: 'rgba(255, 255, 255, 0.9)',

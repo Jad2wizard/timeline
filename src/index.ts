@@ -1,7 +1,7 @@
 import * as _ from 'lodash'
 import * as elementResizeEvent from 'element-resize-event'
 import * as moment from 'moment'
-import { Style, RequiredStyle, defaultStyle } from './style'
+import { Style, CSSStyle, defaultCSSStyle, RequiredStyle, defaultStyle } from './style'
 import { drawPlayBtn } from './canvas/playBtn'
 import { drawTimeScale } from './canvas/timeScale'
 import { drawTickZone } from './canvas/tickZone'
@@ -12,6 +12,7 @@ import Event from './mouseEvent'
 type Props = {
 	parentElement: HTMLElement
 	style?: Style
+	cssStyle?: CSSStyle
 	onCurrentTimeChange?: (timestamp: number) => void
 	onStatusChange?: (isPlaying: boolean) => void
 }
@@ -22,6 +23,7 @@ class Timeline {
 	private _container: HTMLCanvasElement
 	private _ctx: CanvasRenderingContext2D | null
 	private style: RequiredStyle
+	private cssStyle: CSSStyle
 	private currentTime: number
 	private tickGap: number
 	private level: LevelKey
@@ -37,11 +39,10 @@ class Timeline {
 		this.level = 'second'
 		this.tickGap = 20
 		this.style = _.merge({}, defaultStyle, props.style)
+		this.cssStyle = _.merge({}, defaultCSSStyle, props.cssStyle)
 		this._container = document.createElement('canvas')
-		this._container.style.background = this.style.background
-		this._container.style.width = '100%'
-		this._container.style.height = containerHeight + 'px'
-		this._container.style.borderRadius = '0px'
+		this.setCSSStyle()
+
 		props.parentElement.appendChild(this._container)
 		this._container.width = this._container.offsetWidth
 		this._container.height = this._container.offsetHeight
@@ -140,6 +141,17 @@ class Timeline {
 	private setTickGap(t: number) {
 		this.tickGap = t
 		this.render()
+	}
+
+	private setCSSStyle() {
+		this._container.style.height = containerHeight + 'px'
+		const style = this.cssStyle
+		if (style) {
+			for (let k in style) {
+				//@ts-ignore
+				this._container.style[k] = style[k]
+			}
+		}
 	}
 
 	private setTimeScale(s: number) {
