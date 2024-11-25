@@ -11,6 +11,7 @@ import Event from './mouseEvent'
 
 type Props = {
 	parentElement: HTMLElement
+	smooth?: boolean
 	style?: Style
 	cssStyle?: CSSStyle
 	onCurrentTimeChange?: (timestamp: number) => void
@@ -31,6 +32,7 @@ class Timeline {
 	private timeScale = 1
 	private disposed = false
 	private event: Event
+	private smooth = false
 	private onCurrentTimeChange?: (timestamp: number) => void
 	private onStatusChange?: (isPlaying: boolean) => void
 
@@ -38,6 +40,9 @@ class Timeline {
 		this.currentTime = -1
 		this.level = 'second'
 		this.tickGap = 20
+		if (props.smooth) {
+			this.smooth = props.smooth
+		}
 		this.style = _.merge({}, defaultStyle, props.style)
 		this.cssStyle = _.merge({}, defaultCSSStyle, props.cssStyle)
 		this._container = document.createElement('canvas')
@@ -173,7 +178,6 @@ class Timeline {
 
 	private lastTimestamp = 0
 	private ellapsedTime = 0
-	//每 1 / this.timeScale 秒，更新一次currentTime，每次累加 timeLevel 单位的时间
 	private animate = (timestamp: number) => {
 		if (this.disposed) return
 		if (this.isPlaying && this.currentTime < this.endTime) {
@@ -181,12 +185,17 @@ class Timeline {
 			const delta = timestamp - this.lastTimestamp
 			this.lastTimestamp = timestamp
 
-			if (this.ellapsedTime >= 1000 / this.timeScale) {
-				const n = ((this.ellapsedTime / 1000) * this.timeScale) | 0
-				this.ellapsedTime -= (n * 1000) / this.timeScale
-				this.setCurrentTime(moment(this.currentTime).add(n, this.level).valueOf())
+			if (!this.smooth) {
+				//每 1 / this.timeScale 秒，更新一次currentTime，每次累加 timeLevel 单位的时间
+				if (this.ellapsedTime >= 1000 / this.timeScale) {
+					const n = ((this.ellapsedTime / 1000) * this.timeScale) | 0
+					this.ellapsedTime -= (n * 1000) / this.timeScale
+					this.setCurrentTime(moment(this.currentTime).add(n, this.level).valueOf())
+				}
+				this.ellapsedTime += delta
+			} else {
+				this.setCurrentTime(this.currentTime + delta)
 			}
-			this.ellapsedTime += delta
 		}
 		requestAnimationFrame(this.animate)
 	}

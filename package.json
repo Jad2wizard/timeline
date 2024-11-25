@@ -1,6 +1,6 @@
 {
 	"name": "jad-timeline",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"description": "A flexible timeline component for frontend applications, featuring adjustable time scales that range from seconds, minutes, and hours to days, months, and years",
 	"main": "lib/index.js",
 	"types": "typings/index.d.ts",
