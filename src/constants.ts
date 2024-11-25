@@ -15,6 +15,7 @@ export const levelMap = {
 		minGap: 36,
 		tickGap: 40,
 		maxGap: 48,
+		duration: moment.duration(1, 'year').asSeconds(),
 		shouldDrawMidLabel: () => true,
 		shouldDrawHighLabel: () => false,
 		getOneTickTime: (time: Moment) => 1000 * 60 * 60 * 24 * isLeapYear(time), //28 29 31
@@ -27,6 +28,7 @@ export const levelMap = {
 		minGap: 32, //刻度之间的最小距离
 		tickGap: 40, //刻度之间的默认距离
 		maxGap: 48, //刻度之间的最大距离
+		duration: moment.duration(1, 'month').asSeconds(),
 		shouldDrawMidLabel: () => true,
 		shouldDrawHighLabel: (time: Moment) => time.month() === 0,
 		getOneTickTime: (time: Moment) => 1000 * 60 * 60 * 24 * time.daysInMonth(),
@@ -40,6 +42,7 @@ export const levelMap = {
 		minGap: 16,
 		tickGap: 24,
 		maxGap: 32,
+		duration: moment.duration(1, 'day').asSeconds(),
 		shouldDrawMidLabel: () => true,
 		shouldDrawHighLabel: (time: Moment) => time.date() === 1,
 		getOneTickTime: (time: Moment) => 1000 * 60 * 60 * 24,
@@ -52,6 +55,7 @@ export const levelMap = {
 		minGap: 16,
 		tickGap: 24,
 		maxGap: 32,
+		duration: moment.duration(1, 'hour').asSeconds(),
 		shouldDrawMidLabel: (time: Moment) => time.hours() % 6 === 0,
 		shouldDrawHighLabel: (time: Moment) => time.hours() === 0,
 		getOneTickTime: (time: Moment) => 1000 * 60 * 60,
@@ -64,6 +68,7 @@ export const levelMap = {
 		minGap: 8,
 		tickGap: 16,
 		maxGap: 24,
+		duration: moment.duration(1, 'minute').asSeconds(),
 		shouldDrawMidLabel: (time: Moment) => time.minutes() % 10 === 0,
 		shouldDrawHighLabel: (time: Moment) => time.minutes() === 0,
 		getOneTickTime: (time: Moment) => 1000 * 60,
@@ -76,6 +81,7 @@ export const levelMap = {
 		minGap: 8,
 		tickGap: 16,
 		maxGap: 24,
+		duration: 1,
 		shouldDrawMidLabel: (time: Moment) => time.seconds() % 10 === 0,
 		shouldDrawHighLabel: (time: Moment) => time.seconds() === 0,
 		getOneTickTime: (time: Moment) => 1000,

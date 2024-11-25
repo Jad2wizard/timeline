@@ -5,7 +5,6 @@ document.body.style.position = 'relative'
 
 const tl = new Timeline({
 	parentElement: document.body,
-	smooth: true,
 	onCurrentTimeChange: (t) => {
 		console.log(moment(t).format('YYYY-MM-DD HH:mm:ss'), t)
 	},

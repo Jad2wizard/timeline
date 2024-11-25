@@ -6,12 +6,12 @@ import { drawPlayBtn } from './canvas/playBtn'
 import { drawTimeScale } from './canvas/timeScale'
 import { drawTickZone } from './canvas/tickZone'
 import { drawProgress } from './canvas/progress'
-import { containerHeight, LevelKey } from './constants'
+import { containerHeight, LevelKey, levelMap } from './constants'
+import { getCountOfTimeLevel } from './utils'
 import Event from './mouseEvent'
 
 type Props = {
 	parentElement: HTMLElement
-	smooth?: boolean
 	style?: Style
 	cssStyle?: CSSStyle
 	onCurrentTimeChange?: (timestamp: number) => void
@@ -32,7 +32,6 @@ class Timeline {
 	private timeScale = 1
 	private disposed = false
 	private event: Event
-	private smooth = false
 	private onCurrentTimeChange?: (timestamp: number) => void
 	private onStatusChange?: (isPlaying: boolean) => void
 
@@ -40,9 +39,6 @@ class Timeline {
 		this.currentTime = -1
 		this.level = 'second'
 		this.tickGap = 20
-		if (props.smooth) {
-			this.smooth = props.smooth
-		}
 		this.style = _.merge({}, defaultStyle, props.style)
 		this.cssStyle = _.merge({}, defaultCSSStyle, props.cssStyle)
 		this._container = document.createElement('canvas')
@@ -107,12 +103,14 @@ class Timeline {
 	}
 
 	setCurrentTime(time: number) {
-		if (time === this.currentTime) return
+		const needsRender = getCountOfTimeLevel(time, this.level) !== getCountOfTimeLevel(this.currentTime, this.level)
 		this.currentTime = time
 		if (this.onCurrentTimeChange) {
 			this.onCurrentTimeChange(time)
 		}
-		this.render()
+		if (needsRender) {
+			this.render()
+		}
 	}
 
 	setTimeUnit(unit: LevelKey) {
@@ -184,18 +182,7 @@ class Timeline {
 			if (this.lastTimestamp === 0) this.lastTimestamp = timestamp
 			const delta = timestamp - this.lastTimestamp
 			this.lastTimestamp = timestamp
-
-			if (!this.smooth) {
-				//每 1 / this.timeScale 秒，更新一次currentTime，每次累加 timeLevel 单位的时间
-				if (this.ellapsedTime >= 1000 / this.timeScale) {
-					const n = ((this.ellapsedTime / 1000) * this.timeScale) | 0
-					this.ellapsedTime -= (n * 1000) / this.timeScale
-					this.setCurrentTime(moment(this.currentTime).add(n, this.level).valueOf())
-				}
-				this.ellapsedTime += delta
-			} else {
-				this.setCurrentTime(this.currentTime + delta)
-			}
+			this.setCurrentTime(this.currentTime + delta * this.timeScale * levelMap[this.level].duration)
 		}
 		requestAnimationFrame(this.animate)
 	}
