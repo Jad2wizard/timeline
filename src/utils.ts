@@ -18,5 +18,6 @@ export const getFontSize = (font: string) => {
 }
 
 export const getCountOfTimeLevel = (timestamp: number, level: LevelKey) => {
-	return (timestamp / 1000 / levelMap[level].duration) | 0
+	const unitDuration = levelMap[level].duration
+	return (timestamp / 1000 / (typeof unitDuration === 'function' ? unitDuration() : unitDuration)) | 0
 }

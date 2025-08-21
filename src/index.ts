@@ -103,14 +103,11 @@ class Timeline {
 	}
 
 	setCurrentTime(time: number) {
-		const needsRender = getCountOfTimeLevel(time, this.level) !== getCountOfTimeLevel(this.currentTime, this.level)
 		this.currentTime = time
 		if (this.onCurrentTimeChange) {
 			this.onCurrentTimeChange(time)
 		}
-		if (needsRender) {
-			this.render()
-		}
+		this.render()
 	}
 
 	setTimeUnit(unit: LevelKey) {
@@ -182,7 +179,13 @@ class Timeline {
 			if (this.lastTimestamp === 0) this.lastTimestamp = timestamp
 			const delta = timestamp - this.lastTimestamp
 			this.lastTimestamp = timestamp
-			this.setCurrentTime(this.currentTime + delta * this.timeScale * levelMap[this.level].duration)
+			const unitDuration = levelMap[this.level].duration
+			this.setCurrentTime(
+				this.currentTime +
+					delta *
+						this.timeScale *
+						(typeof unitDuration === 'function' ? unitDuration(moment(this.currentTime)) : unitDuration),
+			)
 		}
 		requestAnimationFrame(this.animate)
 	}

@@ -61,7 +61,7 @@ export const defaultCSSStyle: CSSStyle = {
 }
 
 export const defaultStyle: RequiredStyle = {
-	pointerColor: '#A25A53',
+	pointerColor: '#4A90E2',
 	startTimeLabel: {
 		color: 'rgba(255, 255, 255, 0.9)',
 		font: '12px MicrosoftYaHeiUI',

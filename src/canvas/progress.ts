@@ -27,19 +27,20 @@ export const drawProgress = (
 	ctx.save()
 	ctx.translate(leftZoneWidth, topPadding)
 	//在左侧、中间和右侧分别绘制起始、当前和结束时间
-	ctx.fillStyle = style.startTimeLabel.color
-	ctx.font = style.startTimeLabel.font
 	ctx.textBaseline = 'top'
-	ctx.textAlign = 'left'
-	ctx.fillText(moment(startTime).format('YYYY-MM-DD HH:mm:ss'), 0, 0)
 	ctx.fillStyle = style.currentTimeLabel.color
 	ctx.font = style.currentTimeLabel.font
-	ctx.textAlign = 'center'
-	ctx.fillText('当前时间：' + moment(currentTime).format('YYYY-MM-DD HH:mm:ss'), width / 2, 0)
-	ctx.fillStyle = style.endTimeLabel.color
-	ctx.font = style.endTimeLabel.font
+	ctx.textAlign = 'left'
+	ctx.fillText('当前时间：' + moment(currentTime).format('YYYY-MM-DD HH:mm:ss'), 0, 0)
+
+	ctx.fillStyle = style.startTimeLabel.color
+	ctx.font = style.startTimeLabel.font
 	ctx.textAlign = 'right'
-	ctx.fillText(moment(endTime).format('YYYY-MM-DD HH:mm:ss'), width, 0)
+	ctx.fillText(
+		`起始时间: ${moment(startTime).format('YYYY-MM-DD HH:mm:ss')} 结束时间：${moment(endTime).format('YYYY-MM-DD HH:mm:ss')}`,
+		width,
+		0,
+	)
 
 	//绘制 track 和 progress
 	ctx.lineWidth = style.trackWidth

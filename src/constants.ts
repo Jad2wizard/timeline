@@ -15,7 +15,8 @@ export const levelMap = {
 		minGap: 36,
 		tickGap: 40,
 		maxGap: 48,
-		duration: moment.duration(1, 'year').asSeconds(),
+		duration: (time: Moment) => 60 * 60 * 24 * isLeapYear(time),
+		// duration: moment.duration(1, 'year').asSeconds(),
 		shouldDrawMidLabel: () => true,
 		shouldDrawHighLabel: () => false,
 		getOneTickTime: (time: Moment) => 1000 * 60 * 60 * 24 * isLeapYear(time), //28 29 31
@@ -28,7 +29,8 @@ export const levelMap = {
 		minGap: 32, //刻度之间的最小距离
 		tickGap: 40, //刻度之间的默认距离
 		maxGap: 48, //刻度之间的最大距离
-		duration: moment.duration(1, 'month').asSeconds(),
+		duration: (time: Moment) => 60 * 60 * 24 * time.daysInMonth(),
+		// duration: moment.duration(1, 'month').asSeconds(),
 		shouldDrawMidLabel: () => true,
 		shouldDrawHighLabel: (time: Moment) => time.month() === 0,
 		getOneTickTime: (time: Moment) => 1000 * 60 * 60 * 24 * time.daysInMonth(),
